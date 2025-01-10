@@ -4,10 +4,25 @@ import pickle
 
 padding = 1
 dx = 0.05
+#mesh = trimesh.load_mesh('E:/min-tang/unit-test-mesh-vol-particle-sdf-mixedCD-20231110-v0/data/my-bunny.obj')
 
+import sys
 
-mesh = trimesh.load_mesh('E:/min-tang/unit-test-mesh-vol-particle-sdf-mixedCD-20231110-v0/data/my-bunny.obj')
+if (len(sys.argv) < 3):
+   print('Usage: sdfgen in.obj out.sdf [dx] [padding]')
+   sys.exit(1)
 
+print(len(sys.argv))
+
+fpath = sys.argv[1]
+mesh = trimesh.load_mesh(fpath)
+ofpath = sys.argv[2]
+
+if (len(sys.argv) > 3):
+   dx = sys.argv[3]
+
+if (len(sys.argv) > 4):
+   padding = sys.argv[4]
 
 bbox = mesh.bounding_box.bounds
 #获取最小的点 box.min
@@ -40,9 +55,11 @@ for i in range(sizes[2]):
     print('当前进度：'+str((i+1)/sizes[2]*100)+'%')       
 
 #保存
-with open('E:/min-tang/unit-test-mesh-vol-particle-sdf-mixedCD-20231110-v0/data/bunny.txt', "wb") as sdf_file:
+with open(ofpath, "wb") as sdf_file:
     sdf_file.write((str(sizes[0])+' '+str(sizes[1])+' '+str(sizes[2])+'\n').encode(encoding='utf-8'))
-    sdf_file.write((str(min_box[0])+' '+str(min_box[1])+' '+str(min_box[2])+'\n').encode(encoding='utf-8'))
+    #sdf_file.write((str(min_box[0])+' '+str(min_box[1])+' '+str(min_box[2])+'\n').encode(encoding='utf-8'))
+    sdf_file.write((f"{min_box[0]:.4f}"+' '+f"{min_box[1]:.4f}"+' '+f"{min_box[2]:.4f}"+'\n').encode(encoding='utf-8'))
     sdf_file.write((str(dx)+'\n').encode(encoding='utf-8'))
     for i in range(len(distances)):
-        sdf_file.write((str(distances[i][0])+'\n').encode(encoding='utf-8'))
+        #sdf_file.write((str(distances[i][0])+'\n').encode(encoding='utf-8'))
+        sdf_file.write((f"{distances[i][0]:.4f}"+'\n').encode(encoding='utf-8'))
